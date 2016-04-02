@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -54,12 +53,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         weatherHttp = new WeatherHttp(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_mylocation);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fabMyLocation = (FloatingActionButton) findViewById(R.id.fab_mylocation);
+        fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                setMyLocation(getBaseContext());
+            }
+        });
+        FloatingActionButton fabCalling = (FloatingActionButton)findViewById(R.id.fab_call);
+        fabCalling.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                // calling !!
             }
         });
 
