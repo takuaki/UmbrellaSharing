@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="openweather_key" templateMergeStrategy="preserve" translatable="false">
+        9895d18182f1253b541eb25e344a150a
+    </string>
+</resources>

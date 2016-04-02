@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,21 +23,30 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import umbrella.tokyo.jp.umbrella.http.WeatherHttp;
 import umbrella.tokyo.jp.umbrella.util.LogUtil;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback , Callback{
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int zoom = 15;
     private SupportMapFragment mMapFragment = null;
     private  GoogleMap mMap =null;
+    private CardView mWeatherCard = null;
     private LocationManager locationManager;
+    private WeatherHttp weatherHttp = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.d(TAG,"onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        weatherHttp = new WeatherHttp(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_mylocation);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        mWeatherCard = (CardView)findViewById(R.id.weather_card);
         mMapFragment =(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
 
@@ -88,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
+
     private void setMyLocation(@NonNull Context context){
         if(PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
             throw new RuntimeException("permission denied : ACCESS_FILE_LOCATION");
@@ -95,8 +107,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Location location=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+        weatherHttp.onLoad(location,this);
+        //map animation
         mMap.addMarker(new MarkerOptions().position(latLng).title("MyMarker"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
 
+
+    //weather callback
+    @Override
+    public void onFailure(Call call, IOException e) {
+        LogUtil.d(TAG,"onFailure");
+
+    }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+        LogUtil.d(TAG,"onResponse");
+
+    }
 }
