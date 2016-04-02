@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.PermissionChecker;
@@ -15,6 +16,7 @@ import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +25,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -30,6 +35,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import umbrella.tokyo.jp.umbrella.http.WeatherHttp;
 import umbrella.tokyo.jp.umbrella.util.LogUtil;
+import umbrella.tokyo.jp.umbrella.util.WeatherJson;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback , Callback{
 
@@ -116,14 +122,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //weather callback
     @Override
+    @WorkerThread
     public void onFailure(Call call, IOException e) {
         LogUtil.d(TAG,"onFailure");
 
     }
 
     @Override
+    @WorkerThread
     public void onResponse(Call call, Response response) throws IOException {
         LogUtil.d(TAG,"onResponse");
+        try {
+            WeatherJson weatherJson = new WeatherJson(new JSONObject(response.body().string()));
+            final String city = weatherJson.getName();
+            final String weather = weatherJson.getMainWeather();
+            final String description = weatherJson.getDescription();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ((TextView)mWeatherCard.findViewById(R.id.city)).setText(city);
+                    ((TextView)mWeatherCard.findViewById(R.id.description)).setText(description);
+                }
+            });
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
 
     }
 }
