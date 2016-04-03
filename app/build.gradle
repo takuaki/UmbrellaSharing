@@ -1,8 +1,10 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 ext {
     supportLibVersion = '23.2.1'
     espressoVersion = '2.2.1'
+    playserviceVersion = '8.3.0'
 }
 
 android {
@@ -40,12 +42,14 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${supportLibVersion}"
     //weather icon
     compile 'com.github.pwittchen:weathericonview:1.1.0'
-    compile 'com.google.android.gms:play-services:8.4.0'
     //RxJava
     compile 'io.reactivex:rxjava:1.1.1'
     compile 'io.reactivex:rxandroid:1.1.0'
     //OkHttp
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    //play-service
+    compile "com.google.android.gms:play-services:${playserviceVersion}"
+    compile "com.google.android.gms:play-services-gcm:${playserviceVersion}"
 
 
     testCompile 'junit:junit:4.12'

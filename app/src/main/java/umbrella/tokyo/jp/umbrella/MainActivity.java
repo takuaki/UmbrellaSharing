@@ -1,14 +1,20 @@
 package umbrella.tokyo.jp.umbrella;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -32,7 +38,10 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import umbrella.tokyo.jp.umbrella.gcm.RegistrationIntentService;
+import umbrella.tokyo.jp.umbrella.gcm.SharedPreferenceKey;
 import umbrella.tokyo.jp.umbrella.http.WeatherHttp;
+import umbrella.tokyo.jp.umbrella.util.CheckPlayService;
 import umbrella.tokyo.jp.umbrella.util.LogUtil;
 import umbrella.tokyo.jp.umbrella.util.WeatherJson;
 
@@ -45,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CardView mWeatherCard = null;
     private LocationManager locationManager;
     private WeatherHttp weatherHttp = null;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private boolean isReceiverRegistered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +63,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         weatherHttp = new WeatherHttp(this);
+
+        /**
+         * GCM receiver
+         */
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences.
+                    getBoolean(SharedPreferenceKey.SENT_TOKEN_TO_SEVER,false);
+                if(sentToken){
+                    LogUtil.i(TAG,"register");
+                    // register
+                }else{
+                    LogUtil.i(TAG,"unregister");
+                }
+            }
+        };
 
         FloatingActionButton fabMyLocation = (FloatingActionButton) findViewById(R.id.fab_mylocation);
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +101,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapFragment =(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
 
+        //Register BroadcastReceiver
+        registerReceiver();
+        if(CheckPlayService.checkPlayServices(this)){
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+
     }
 
     @Override
@@ -84,9 +120,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver();
         if(mMap!=null){
             setMyLocation(this);
         }
+    }
+
+    @Override
+    protected void onPause(){
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
+        super.onPause();
     }
 
     @Override
@@ -124,6 +168,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
     }
 
+    private void registerReceiver(){
+        if(!isReceiverRegistered){
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(SharedPreferenceKey.REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
+
+    }
 
     //weather callback
     @Override
