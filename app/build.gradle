@@ -5,6 +5,7 @@ ext {
     supportLibVersion = '23.2.1'
     espressoVersion = '2.2.1'
     playserviceVersion = '8.3.0'
+    awsserviceVersion = '2.+'
 }
 
 android {
@@ -50,6 +51,10 @@ dependencies {
     //play-service
     compile "com.google.android.gms:play-services:${playserviceVersion}"
     compile "com.google.android.gms:play-services-gcm:${playserviceVersion}"
+
+    compile "com.amazonaws:aws-android-sdk-sns:${awsserviceVersion}"
+    compile "com.amazonaws:aws-android-sdk-core:${awsserviceVersion}"
+    compile "com.amazonaws:aws-android-sdk-cognito:${awsserviceVersion}"
 
 
     testCompile 'junit:junit:4.12'
