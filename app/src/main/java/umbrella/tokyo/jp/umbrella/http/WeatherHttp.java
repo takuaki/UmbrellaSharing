@@ -21,7 +21,7 @@ public class WeatherHttp implements  WeatherListener{
 
     private static final String TAG = WeatherHttp.class.getSimpleName();
     private URL url = null;
-    private String urlStr = "http://api.openweathermap.org/data/2.5/weather?";
+    private String urlStr = "http://api.openweathermap.org/data/2.5/forecast?";
     private Context context = null;
     private OkHttpClient client = null;
 
