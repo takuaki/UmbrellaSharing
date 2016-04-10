@@ -3,7 +3,6 @@ package umbrella.tokyo.jp.umbrella.http;
 import android.content.Context;
 import android.location.Location;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -42,9 +41,7 @@ public class WeatherHttp implements  WeatherListener{
             url = new URL(urlStr);
             Request request = new Request.Builder().url(url).build();
             client.newCall(request).enqueue(callback);
-        }catch(MalformedURLException e){
-            e.printStackTrace();
-        }catch(IOException e){
+        }catch(MalformedURLException e) {
             e.printStackTrace();
         }
     }

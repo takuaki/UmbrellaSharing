@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SupportMapFragment mMapFragment = null;
     private  GoogleMap mMap =null;
     private CardView mWeatherCard = null;
-    private LocationManager locationManager;
+    protected LocationManager locationManager;
     private WeatherHttp weatherHttp = null;
 
 
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
-    private boolean checkPermission(){
+    protected boolean checkPermission(){
         if(locationManager!=null){
             if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)||
                     ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED){
