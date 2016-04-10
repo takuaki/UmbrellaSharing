@@ -16,6 +16,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     packagingOptions {
@@ -41,6 +42,8 @@ dependencies {
     //weather icon
     compile 'com.github.pwittchen:weathericonview:1.1.0'
     compile 'com.google.android.gms:play-services:8.4.0'
+    //openweather library
+    //compile 'com.kubotaku:openweathermap-lib:0.1.0'
     //RxJava
     compile 'io.reactivex:rxjava:1.1.1'
     compile 'io.reactivex:rxandroid:1.1.0'
@@ -52,6 +55,7 @@ dependencies {
     testCompile('com.android.support.test:runner:0.4.1') {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+    testCompile 'org.robolectric:robolectric:3.0'
 
 
     androidTestCompile "com.android.support:support-v4:${supportLibVersion}"
