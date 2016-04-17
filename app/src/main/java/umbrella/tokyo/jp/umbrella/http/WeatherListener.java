@@ -2,11 +2,11 @@ package umbrella.tokyo.jp.umbrella.http;
 
 import android.location.Location;
 
-import okhttp3.Callback;
+import rx.Single;
 
 /**
  * Created by mori on 4/2/16.
  */
 public interface WeatherListener  {
-    public void onLoad(Location location, Callback callback);
+    Single<String> onLoad(Location location);
 }

@@ -4,6 +4,8 @@ ext {
     supportLibVersion = '23.2.1'
     espressoVersion = '2.2.1'
     okhttpVersion = '3.2.0'
+    rxjavaVersion = '1.1.0'
+    rxlifecycleVersion = '0.4.0'
 }
 
 android {
@@ -44,8 +46,11 @@ dependencies {
     compile 'com.github.pwittchen:weathericonview:1.1.0'
     compile 'com.google.android.gms:play-services:8.4.0'
     //RxJava
-    compile 'io.reactivex:rxjava:1.1.1'
-    compile 'io.reactivex:rxandroid:1.1.0'
+    compile "io.reactivex:rxjava:${rxjavaVersion}"
+    compile "io.reactivex:rxandroid:${rxjavaVersion}"
+    //rxlifecycle
+    compile "com.trello:rxlifecycle:${rxlifecycleVersion}"
+    compile "com.trello:rxlifecycle-components:${rxlifecycleVersion}"
     //OkHttp
     compile "com.squareup.okhttp3:okhttp:${okhttpVersion}"
 
