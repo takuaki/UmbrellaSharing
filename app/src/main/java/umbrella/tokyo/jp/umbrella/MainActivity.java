@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.github.pwittchen.weathericonview.WeatherIconView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,7 +36,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import umbrella.tokyo.jp.umbrella.http.WeatherHttp;
 import umbrella.tokyo.jp.umbrella.util.LogUtil;
-import umbrella.tokyo.jp.umbrella.util.WeatherForecastsJson;
+import umbrella.tokyo.jp.umbrella.util.WeatherJson;
+import umbrella.tokyo.jp.umbrella.util.WeatherUtil;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback , Callback,LocationListener{
 
@@ -196,16 +198,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onResponse(Call call, Response response) throws IOException {
         LogUtil.d(TAG,"onResponse");
         try {
-            WeatherForecastsJson weatherForecastsJson = new WeatherForecastsJson(new JSONObject(response.body().string()));
-            final String city = weatherForecastsJson.city.name;
-            //final String weather = weatherJson.getMainWeather();
-            //final String description = weatherJson.getDescription();
+            WeatherJson weatherJson = new WeatherJson(new JSONObject(response.body().string()));
+            final String city = weatherJson.getName();
+            final String weather = weatherJson.getMainWeather();
+            final WeatherUtil.Description description =WeatherUtil.Description.convey(weatherJson.getDescription());
+            final String iconResource = WeatherUtil.getIconResource(this,description);
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //((ImageView)mWeatherCard.findViewById(R.id.image_weather)).setImageBitmap(new Bitmap());
                     ((TextView)mWeatherCard.findViewById(R.id.city)).setText(city);
-                    //((TextView)mWeatherCard.findViewById(R.id.description)).setText(description);
+                    ((WeatherIconView)mWeatherCard.findViewById(R.id.image_weather)).setIconResource(iconResource);
                 }
             });
         }catch(JSONException e){

@@ -16,17 +16,17 @@
     <string name="nav_title_slideshow">Slideshow</string>
     <string name="nav_title_tools">Tools</string>
 
-    <!-- weather forecast -->
-    <string name="weather_sunny">Sunny all day!</string>
-    <string name="weather_cloudy">Cloudly all day ...</string>
-    <string name="weather_rainy">Rainy all day ...</string>
-    <string name="weather_sunny_cloudy">Sunny to Cloudy</string>
-    <string name="weather_sunny_rainy">Sunny to Rainy</string>
-    <string name="weather_cloudy_sunny">Cloudy to Sunny</string>
-    <string name="weather_cloudy_rainy">Cloudy to Rainy</string>
-    <string name="weather_rainy_sunny">Rainy to Sunny</string>
-    <string name="weather_rainy_cloudy">Rainy to Cloudy</string>
 
+    <!--weather discription http://openweathermap.org/weather-conditions-->
+    <string name="clear_sky">clear sky</string>
+    <string name="few_clouds">few clouds</string>
+    <string name="scattered_clouds">scattered clouds</string>
+    <string name="broken_clouds">broken clouds</string>
+    <string name="shower_rain">shower rain</string>
+    <string name="rain">rain</string>
+    <string name="thunderstorm">thunderstorm</string>
+    <string name="snow">snow</string>
+    <string name="mist">mist</string>
 
     <string name="weather_card_icon_description">weather icon</string>
     <string name="weather_card_city_name">city</string>

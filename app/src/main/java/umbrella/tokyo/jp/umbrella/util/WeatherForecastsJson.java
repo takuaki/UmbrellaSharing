@@ -84,7 +84,7 @@ final public class WeatherForecastsJson{
                 this.rain = new Rain(jsonObject.getJSONObject("rain"));
                 this.snow = new Snow(jsonObject.getJSONObject("snow"));
             }catch(JSONException e){
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             this.dt_txt = jsonObject.getString("dt_txt");
             JSONArray array = jsonObject.getJSONArray("weather");

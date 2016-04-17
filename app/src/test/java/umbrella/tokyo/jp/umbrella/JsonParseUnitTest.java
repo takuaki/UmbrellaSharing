@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class JsonParseTest {
+public class JsonParseUnitTest {
 
     private static String readFileFromAssets(String filename,Context c){
         try{
