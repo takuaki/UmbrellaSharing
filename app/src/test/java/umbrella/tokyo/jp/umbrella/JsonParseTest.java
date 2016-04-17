@@ -89,6 +89,27 @@ public class JsonParseTest {
     }
 
     @Test
+    public void testJsonParser2() throws Exception{
+        Application context = RuntimeEnvironment.application;
+        String string = readFileFromAssets("weatherforecast2.txt",context);
+        JSONObject jsonObject = new JSONObject(string);
+        WeatherForecastsJson weatherForecastsJson = new WeatherForecastsJson(jsonObject);
+        //city
+        assertThat("Tōkyō-to",is(weatherForecastsJson.city.name));
+        assertThat(1850144,is(weatherForecastsJson.city.id));
+        assertThat("JP",is(weatherForecastsJson.city.country));
+        //list
+        List<WeatherForecastsJson.Item> items= weatherForecastsJson.getListItem();
+        assertThat(37,is(items.size()));
+        //それぞれの天気と時間のみ確認
+        assertThat("Rain",is(items.get(0).getWeatherList().get(0).main));
+        assertThat(1460883600,is(items.get(0).dt));
+        assertThat("Clear",is(items.get(1).getWeatherList().get(0).main));
+        assertThat(1460894400,is(items.get(1).dt));
+        // 以下省略
+    }
+
+    @Test
     public void test() throws Exception{
         Application context = RuntimeEnvironment.application;
         String string = readFileFromAssets("json.txt",context);
