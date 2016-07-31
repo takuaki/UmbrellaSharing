@@ -3,6 +3,9 @@ apply plugin: 'com.android.application'
 ext {
     supportLibVersion = '23.2.1'
     espressoVersion = '2.2.1'
+    okhttpVersion = '3.2.0'
+    rxjavaVersion = '1.1.0'
+    rxlifecycleVersion = '0.4.0'
 }
 
 android {
@@ -16,6 +19,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     packagingOptions {
@@ -42,18 +46,23 @@ dependencies {
     compile 'com.github.pwittchen:weathericonview:1.1.0'
     compile 'com.google.android.gms:play-services:8.4.0'
     //RxJava
-    compile 'io.reactivex:rxjava:1.1.1'
-    compile 'io.reactivex:rxandroid:1.1.0'
+    compile "io.reactivex:rxjava:${rxjavaVersion}"
+    compile "io.reactivex:rxandroid:${rxjavaVersion}"
+    //rxlifecycle
+    compile "com.trello:rxlifecycle:${rxlifecycleVersion}"
+    compile "com.trello:rxlifecycle-components:${rxlifecycleVersion}"
     //OkHttp
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile "com.squareup.okhttp3:okhttp:${okhttpVersion}"
 
 
     testCompile 'junit:junit:4.12'
     testCompile('com.android.support.test:runner:0.4.1') {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
 
-
+    androidTestCompile "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     androidTestCompile "com.android.support:support-v4:${supportLibVersion}"
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile('com.android.support.test:runner:0.4.1') {

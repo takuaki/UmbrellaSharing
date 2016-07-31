@@ -8,7 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
+import android.support.annotation.UiThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,16 +28,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import rx.SingleSubscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import umbrella.tokyo.jp.umbrella.http.WeatherHttp;
 import umbrella.tokyo.jp.umbrella.util.LogUtil;
 import umbrella.tokyo.jp.umbrella.util.WeatherJson;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback , Callback,LocationListener{
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback , LocationListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int zoom = 15;
@@ -47,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SupportMapFragment mMapFragment = null;
     private  GoogleMap mMap =null;
     private CardView mWeatherCard = null;
-    private LocationManager locationManager;
+    protected LocationManager locationManager;
     private WeatherHttp weatherHttp = null;
 
 
@@ -157,15 +155,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LogUtil.d(TAG,"onProviderDisabled");
     }
 
-
-
     private void setMyLocation(@Nullable Location location){
         if(location==null) return ;
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-        weatherHttp.onLoad(location,this);
         //map animation
         mMap.addMarker(new MarkerOptions().position(latLng).title("MyMarker"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+        //weather
+        weatherHttp.onLoad(location).observeOn(Schedulers.io()).subscribeOn(AndroidSchedulers.mainThread()).subscribe(new SingleSubscriber<String>() {
+            @Override
+            public void onSuccess(String responseBody) {
+                try {
+                    WeatherJson weatherJson = new WeatherJson(new JSONObject(responseBody));
+                    String city = weatherJson.getName();
+                    String weather = weatherJson.getMainWeather();
+                    String description = weatherJson.getDescription();
+                    setWeatherCard(city,description);
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onError(Throwable error) {
+                error.printStackTrace();
+            }
+        });
+
     }
 
     private Location getLastKnownLocation(){
@@ -173,7 +188,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
-    private boolean checkPermission(){
+    @UiThread
+    private void setWeatherCard(final String city,final String description){
+        ((TextView)mWeatherCard.findViewById(R.id.city)).setText(city);
+        ((TextView)mWeatherCard.findViewById(R.id.description)).setText(description);
+    }
+
+    protected boolean checkPermission(){
         if(locationManager!=null){
             if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)||
                     ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED){
@@ -183,33 +204,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
-    //weather callback
-    @Override
-    @WorkerThread
-    public void onFailure(Call call, IOException e) {
-        LogUtil.d(TAG,"onFailure");
-
-    }
-
-    @Override
-    @WorkerThread
-    public void onResponse(Call call, Response response) throws IOException {
-        LogUtil.d(TAG,"onResponse");
-        try {
-            WeatherJson weatherJson = new WeatherJson(new JSONObject(response.body().string()));
-            final String city = weatherJson.getName();
-            final String weather = weatherJson.getMainWeather();
-            final String description = weatherJson.getDescription();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ((TextView)mWeatherCard.findViewById(R.id.city)).setText(city);
-                    ((TextView)mWeatherCard.findViewById(R.id.description)).setText(description);
-                }
-            });
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-
-    }
 }
